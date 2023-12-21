@@ -1,0 +1,38 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Live Feed {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <div class="content">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Camera 1</h4>
+          </div>
+          <div class="card-body">
+            <img src="{% url 'video_feed' %}" alt="Image Alt Text">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">Camera 2</h4>
+            </div>
+            <div class="card-body">
+              <img src="{{ ASSETS_ROOT }}/img/livefeed2.png" alt="Image Alt Text">
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

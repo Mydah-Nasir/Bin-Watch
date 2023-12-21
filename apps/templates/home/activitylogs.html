@@ -1,0 +1,175 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Activity Logs {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card ">
+          <div class="card-header">
+            <h4 class="card-title">Activity Logs</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table tablesorter " id="">
+                <thead class=" text-primary">
+                  <tr>
+                    <th>
+                      Type of Activity
+                    </th>
+                    <th>
+                      Camera Title
+                    </th>
+                    <th>
+                      Time
+                    </th>
+                    <th class="text-center">
+                      Date
+                    </th>
+                    <th class="text-center">
+                      View Video
+                    </th>
+                    <th class="text-center">
+                      Delete Log
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      Littering
+                    </td>
+                    <td>
+                      Camera 1
+                    </td>
+                    <td>
+                      10:00 AM
+                    </td>
+                    <td class="text-center">
+                      08/06/2023
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-eye video-icon" data-video-url="https://www.example.com/your-video-url.mp4"></i>
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-trash delete-icon"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                     Not Littering
+                    </td>
+                    <td>
+                      Camera 1
+                    </td>
+                    <td>
+                      11:00 AM
+                    </td>
+                    <td class="text-center">
+                      08/10/2023
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-eye video-icon" data-video-url="https://www.example.com/your-video-url.mp4"></i>
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-trash delete-icon"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                     Not Littering
+                    </td>
+                    <td>
+                      Camera 2
+                    </td>
+                    <td>
+                      2:00 PM
+                    </td>
+                    <td class="text-center">
+                      08/10/2023
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-eye video-icon" data-video-url="https://www.example.com/your-video-url.mp4"></i>
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-trash delete-icon"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                     Littering
+                    </td>
+                    <td>
+                      Camera 2
+                    </td>
+                    <td>
+                      3:00 PM
+                    </td>
+                    <td class="text-center">
+                      08/12/2023
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-eye video-icon" data-video-url="https://www.example.com/your-video-url.mp4"></i>
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-trash delete-icon"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                     Littering
+                    </td>
+                    <td>
+                      Camera 1
+                    </td>
+                    <td>
+                      3::05 PM
+                    </td>
+                    <td class="text-center">
+                      08/12/2023
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-eye video-icon" data-video-url="https://www.example.com/your-video-url.mp4"></i>
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-trash delete-icon"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                     Not Littering
+                    </td>
+                    <td>
+                      Camera 3
+                    </td>
+                    <td>
+                      2:30 PM
+                    </td>
+                    <td class="text-center">
+                      08/20/2023
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-eye video-icon" data-video-url="https://www.example.com/your-video-url.mp4"></i>
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-trash delete-icon"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

@@ -1,0 +1,172 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} View Users {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card ">
+          <div class="card-header">
+            <div class="row">
+            <div class="col-md-10">
+                <h4 class="card-title">View Users</h4>
+            </div>
+            <div class="col-md-2">
+                <a href="/adduser.html" class="btn btn-fill btn-primary">Add User</a>
+            </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table tablesorter " id="">
+                <thead class=" text-primary">
+                  <tr>
+                    <th>
+                      Qalam ID
+                    </th>
+                    <th>
+                      Username
+                    </th>
+                    <th>
+                      Email Address
+                    </th>
+                    <th>
+                      Name
+                    </th>
+                    <th>
+                      Batch
+                    </th>
+                    <th>
+                      Department
+                    </th>
+                    <th class="text-center">
+                        Edit Log
+                    </th>
+                    <th class="text-center">
+                      Delete Log
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      342350
+                    </td>
+                    <td>
+                      anasir.bese20seecs
+                    </td>
+                    <td>
+                      anasir.bese20seecs@seecs.edu.pk
+                    </td>
+                    <td>
+                      Alina Nasir
+                    </td>
+                    <td>
+                        2020
+                    </td>
+                    <td>
+                        SEECS
+                    </td>
+                    <td class="text-center">
+                        <i class="fas fa-edit edit-icon"></i>
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-trash delete-icon"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      333191
+                    </td>
+                    <td>
+                      mnasir.bese20seecs
+                    </td>
+                    <td>
+                      mnasir.bese20seecs@seecs.edu.pk
+                    </td>
+                    <td>
+                      Mydah Nasir
+                    </td>
+                    <td>
+                        2020
+                    </td>
+                    <td>
+                        SEECS
+                    </td>
+                    <td class="text-center">
+                        <i class="fas fa-edit edit-icon"></i>
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-trash delete-icon"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      344994
+                    </td>
+                    <td>
+                      fjamal.bese20seecs
+                    </td>
+                    <td>
+                      fjamal.bese20seecs@seecs.edu.pk
+                    </td>
+                    <td>
+                      Faiq Jamal
+                    </td>
+                    <td>
+                        2020
+                    </td>
+                    <td>
+                        SEECS
+                    </td>
+                    <td class="text-center">
+                        <i class="fas fa-edit edit-icon"></i>
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-trash delete-icon"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      328042
+                    </td>
+                    <td>
+                      manas.me20smme
+                    </td>
+                    <td>
+                        manas.me20smme@student.nust.edu.pk
+                    </td>
+                    <td>
+                      Anas Nasir
+                    </td>
+                    <td>
+                        2020
+                    </td>
+                    <td>
+                        SMME
+                    </td>
+                    <td class="text-center">
+                        <i class="fas fa-edit edit-icon"></i>
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-trash delete-icon"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
