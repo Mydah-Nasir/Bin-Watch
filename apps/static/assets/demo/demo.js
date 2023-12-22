@@ -86,9 +86,9 @@ demo = {
       type: 'line',
       responsive: true,
       data: {
-        labels: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT','SUN'],
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         datasets: [{
-          label: "Littering Activities",
+          label: "Active Users",
           borderColor: "#f96332",
           pointBorderColor: "#FFF",
           pointBackgroundColor: "#f96332",
@@ -99,7 +99,7 @@ demo = {
           fill: true,
           backgroundColor: gradientFill,
           borderWidth: 2,
-          data: [90, 27, 60, 12, 80,90,12]
+          data: [542, 480, 430, 550, 530, 453, 380, 434, 568, 610, 700, 630]
         }]
       },
       options: gradientChartOptionsConfiguration
@@ -351,16 +351,16 @@ demo = {
 
     var ctx = document.getElementById("chartLinePurple").getContext("2d");
 
-    var gradientStroke = ctx.createLinearGradient(0, 170, 0, 50);
+    var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
 
     gradientStroke.addColorStop(1, 'rgba(72,72,176,0.2)');
     gradientStroke.addColorStop(0.2, 'rgba(72,72,176,0.0)');
     gradientStroke.addColorStop(0, 'rgba(119,52,169,0)'); //purple colors
 
     var data = {
-      labels: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT','SUN'],
+      labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
       datasets: [{
-        label: "Littering Activities",
+        label: "Data",
         fill: true,
         backgroundColor: gradientStroke,
         borderColor: '#d048b6',
@@ -374,7 +374,7 @@ demo = {
         pointHoverRadius: 4,
         pointHoverBorderWidth: 15,
         pointRadius: 4,
-        data: [80, 100, 70, 80, 120, 80,70],
+        data: [80, 100, 70, 80, 120, 80],
       }]
     };
 
@@ -394,9 +394,9 @@ demo = {
     gradientStroke.addColorStop(0, 'rgba(66,134,121,0)'); //green colors
 
     var data = {
-      labels: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT','SUN'],
+      labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV'],
       datasets: [{
-        label: "Non-Littering Activities",
+        label: "My First dataset",
         fill: true,
         backgroundColor: gradientStroke,
         borderColor: '#00d6b4',
@@ -410,7 +410,7 @@ demo = {
         pointHoverRadius: 4,
         pointHoverBorderWidth: 15,
         pointRadius: 4,
-        data: [90, 27, 60, 12, 80,90,12],
+        data: [90, 27, 60, 12, 80],
       }]
     };
 
@@ -423,7 +423,7 @@ demo = {
 
 
 
-    var chart_labels = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
+    var chart_labels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
     var chart_data = [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100];
 
 
@@ -439,7 +439,7 @@ demo = {
       data: {
         labels: chart_labels,
         datasets: [{
-          label: "Daily Activities",
+          label: "My First dataset",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: '#d346b1',
@@ -498,7 +498,7 @@ demo = {
         display: false
       },
       data: {
-        labels: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+        labels: ['USA', 'GER', 'AUS', 'UK', 'RO', 'BR'],
         datasets: [{
           label: "Countries",
           fill: true,
