@@ -358,9 +358,9 @@ demo = {
     gradientStroke.addColorStop(0, 'rgba(119,52,169,0)'); //purple colors
 
     var data = {
-      labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+      labels: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
       datasets: [{
-        label: "Data",
+        label: "Littering",
         fill: true,
         backgroundColor: gradientStroke,
         borderColor: '#d048b6',
@@ -394,9 +394,9 @@ demo = {
     gradientStroke.addColorStop(0, 'rgba(66,134,121,0)'); //green colors
 
     var data = {
-      labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV'],
+      labels: ['MON', 'TUE', 'WED', 'THU', 'FRI'],
       datasets: [{
-        label: "My First dataset",
+        label: "Non-Littering",
         fill: true,
         backgroundColor: gradientStroke,
         borderColor: '#00d6b4',
@@ -423,7 +423,7 @@ demo = {
 
 
 
-    var chart_labels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    var chart_labels = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'];
     var chart_data = [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100];
 
 
@@ -498,9 +498,9 @@ demo = {
         display: false
       },
       data: {
-        labels: ['USA', 'GER', 'AUS', 'UK', 'RO', 'BR'],
+        labels: ['C2', 'SEECS', 'Lab', 'Hostel', 'NSTP'],
         datasets: [{
-          label: "Countries",
+          label: "Locations",
           fill: true,
           backgroundColor: gradientStroke,
           hoverBackgroundColor: gradientStroke,
@@ -508,7 +508,7 @@ demo = {
           borderWidth: 2,
           borderDash: [],
           borderDashOffset: 0.0,
-          data: [53, 20, 10, 80, 100, 45],
+          data: [53, 20, 10, 80, 100],
         }]
       },
       options: gradientBarChartConfiguration
