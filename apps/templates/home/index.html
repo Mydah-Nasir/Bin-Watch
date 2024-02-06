@@ -252,21 +252,22 @@
                                 </tr>
                                 </thead>
                                 <tbody>
+                                    {% for log in logs %}
                                 <tr>
                                     <td>
-                                        Littering
+                                        {{log.activity_type}}
                                     </td>
                                     <td>
-                                        C2
+                                        {{log.camera_name}}
                                     </td>
                                     <td>
-                                        10:00 AM
+                                        {{log.camera_name}}
                                     </td>
                                     <td class="text-center">
-                                        08/06/2023
+                                        {{ log.created_at|date:"Y-m-d" }}
                                     </td>
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <td>
                                         Not Littering
                                     </td>
@@ -279,8 +280,8 @@
                                     <td class="text-center">
                                         08/10/2023
                                     </td>
-                                </tr>
-                                <tr>
+                                </tr> -->
+                                <!-- <tr>
                                     <td>
                                         Littering
                                     </td>
@@ -293,8 +294,8 @@
                                     <td class="text-center">
                                         08/12/2023
                                     </td>
-                                </tr>
-                                <tr>
+                                </tr> -->
+                                <!-- <tr>
                                     <td>
                                         Littering
                                     </td>
@@ -307,8 +308,8 @@
                                     <td class="text-center">
                                         08/12/2023
                                     </td>
-                                </tr>
-                                <tr>
+                                </tr> -->
+                                <!-- <tr>
                                     <td>
                                         Littering
                                     </td>
@@ -321,8 +322,8 @@
                                     <td class="text-center">
                                         08/12/2023
                                     </td>
-                                </tr>
-                                <tr>
+                                </tr> -->
+                                <!-- <tr>
                                     <td>
                                         Not-Littering
                                     </td>
@@ -335,8 +336,8 @@
                                     <td class="text-center">
                                         08/12/2023
                                     </td>
-                                </tr>
-                                <tr>
+                                </tr> -->
+                                <!-- <tr>
                                     <td>
                                         Littering
                                     </td>
@@ -349,7 +350,8 @@
                                     <td class="text-center">
                                         08/12/2023
                                     </td>
-                                </tr>
+                                </tr> -->
+                                {% endfor %}
                                 </tbody>
                             </table>
                         </div>

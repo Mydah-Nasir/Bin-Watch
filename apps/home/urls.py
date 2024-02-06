@@ -13,7 +13,7 @@ urlpatterns = [
     # The home page
     path('', views.index, name='home'),
     path('video_feed/', video_feed, name='video_feed'),
-    path('livefeed/', livefeed, name='livefeed'),  # Updated URL pattern for livefeed
+    path('livefeed/', livefeed, name='livefeed'),
     # Matches any html file
     re_path(r'^.*\.*', views.pages, name='pages'),
 

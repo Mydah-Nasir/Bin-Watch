@@ -7,7 +7,11 @@ Copyright (c) 2019 - present AppSeed.us
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, SignUpForm
+from pymongo import MongoClient
 
+client = MongoClient('localhost', 27017)
+dbname = client['BinWatch']
+collection_name = dbname["User"]
 
 def login_view(request):
     form = LoginForm(request.POST or None)
@@ -43,6 +47,24 @@ def register_user(request):
             raw_password = form.cleaned_data.get("password1")
             user = authenticate(username=username, password=raw_password)
 
+            qalamId = form.cleaned_data.get("qalamId")
+            firstname = form.cleaned_data.get("firstname")
+            lastname = form.cleaned_data.get("lastname")
+            department = form.cleaned_data.get("department")
+            batch = form.cleaned_data.get("batch")
+            email = form.cleaned_data.get("email")
+
+            user = {
+                'username':username,
+                'qalamId':qalamId,
+                'firstname':firstname,
+                'lastname':lastname,
+                'department':department,
+                'batch':batch,
+                'email':email,
+            }
+            collection_name.insert_many([user])
+
             msg = 'User created successfully.'
             success = True
 
@@ -54,3 +76,4 @@ def register_user(request):
         form = SignUpForm()
 
     return render(request, "accounts/register.html", {"form": form, "msg": msg, "success": success})
+

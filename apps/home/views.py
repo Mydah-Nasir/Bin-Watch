@@ -12,27 +12,58 @@ from django.urls import reverse
 import cv2
 import os
 import threading
+import math
 from django.http import StreamingHttpResponse
 from django.views.decorators import gzip
 from django.shortcuts import render
 import supervision as sv
 import numpy as np
 from ultralytics import YOLO
+from pymongo import MongoClient
+from datetime import datetime
 
+client = MongoClient('localhost', 27017)
 rtsp_url = 'rtsp://admin:nust123456@192.168.0.118:554/Streaming/Channels/101'
 webcam_url = 0
 
+min_distance = [float('inf')]
+
+dbname = client['BinWatch']
+collection_name = dbname["ActivityLog"]
+distance_collection = dbname["Distance"]
+user_collection = dbname["User"]
+#let's create two documents
+activity_1 = {
+    "activity_type" : "Littering",
+    "camera_name" : "C2",
+    "created_at": datetime.now()
+}
+activity_2 = {
+    "activity_type" : "Not Littering",
+    "camera_name" : "C2",
+    "created_at": datetime.now()
+}
+
+#collection_name.insert_many([activity_1,activity_2])
+logs_cursor = collection_name.find({}).sort('_id', -1).limit(8)
+logs_index = list(logs_cursor)
+logs_cursor_all = collection_name.find({})
+logs = list(logs_cursor_all)
+user_cursor = user_collection.find({})
+users = list(user_cursor)
+#print("Logs:",logs)
+
 @login_required(login_url="/login/")
 def index(request):
-    context = {'segment': 'index'}
-
+    context = {'segment': 'index','logs':logs_index}
     html_template = loader.get_template('home/index.html')
     return HttpResponse(html_template.render(context, request))
-
 
 @login_required(login_url="/login/")
 def pages(request):
     context = {}
+    context['logs']=logs
+    context['users']=users
     # All resource paths end in .html.
     # Pick out the html file name from the url. And load that template.
     try:
@@ -41,8 +72,8 @@ def pages(request):
 
         if load_template == 'admin':
             return HttpResponseRedirect(reverse('admin:index'))
+        
         context['segment'] = load_template
-
         html_template = loader.get_template('home/' + load_template)
         return HttpResponse(html_template.render(context, request))
 
@@ -58,15 +89,90 @@ def pages(request):
 
 # Get the base directory of your Django project
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+video_url = 'http://192.168.100.203:8080/video'
 
 # Construct the path to best.pt dynamically
 weights_path = os.path.join(BASE_DIR, 'static', 'assets', 'weights', 'best.pt')
 
-model = YOLO(weights_path)  # Replace with the actual path to your YOLO model
+model = YOLO(weights_path)  #actual path to YOLO model
 
 byte_tracker = sv.ByteTrack()
 annotator = sv.BoxAnnotator()
+
+
 import math
+def calculate_distance(box1, box2):
+    # Extract coordinates of the centers
+    center1_x, center1_y = box1[0] + box1[2] / 2, box1[1] + box1[3] / 2
+    center2_x, center2_y = box2[0] + box2[2] / 2, box2[1] + box2[3] / 2
+
+    # Calculate Euclidean distance
+    distance = math.sqrt((center1_x - center2_x)*2 + (center1_y - center2_y)*2)
+    print(distance)
+    return distance
+
+def is_overlap(box1, box2):
+    x1, y1, w1, h1 = box1
+    x2, y2, w2, h2 = box2
+    print("Box1: ",x1, y1, w1, h1)
+    print("Box2: ",x2, y2, w2, h2)
+    # Check for overlap along the x-axis
+    if x1 < x2 + w2 and x1 + w1 > x2:
+        # Check for overlap along the y-axis
+        if y1 < y2 + h2 and y1 + h1 > y2:
+            print('Overlap')
+            return True  # Bounding boxes overlap
+    print('No overlap')
+    return False  # Bounding boxes do not overlap
+
+
+def process_frame(frame: np.ndarray, min_distance):
+    distance = 0
+    print(min_distance[0])
+    detections = model(frame)[0]
+    is_trash = False
+
+    for detection in detections:
+        class_number = int(detection.boxes.cls[0].item())
+        class_name = detection.names[class_number]
+        print(class_name)
+        confidence = detection.boxes.conf.item()
+        x, y, w, h = detection.boxes.xywh[0].cpu().numpy()
+
+        # Example: Check if the detected object is "Trash" or "TrashCan"
+        if class_name == "Trash":
+            trash_box = (x, y, w, h)
+            is_trash = True
+        elif class_name == "TrashCan":
+            trashcan_box = (x, y, w, h)
+        elif class_name == "Person":
+            person_box = (x, y, w, h)
+
+    if 'person_box' in locals():
+        if 'trash_box' in locals() and 'trashcan_box' in locals():
+            if not is_overlap(person_box,trash_box):
+                if is_trash:
+                    distance = calculate_distance(trash_box, trashcan_box)
+                    print(f"Distance between Trash and TrashCan: {distance}")
+                    print(f"Minimum Distance between Trash and TrashCan: {min_distance[0]}")
+
+                    # Update minimum distance and corresponding frame
+                    if distance < min_distance[0]:
+                        min_distance[0] = distance
+                else:
+                    distance = min_distance[0]
+                    print(f"Distance between Trash and TrashCan: {distance}")
+                    print(f"Minimum Distance between Trash and TrashCan: {min_distance[0]}")
+    else:
+        if min_distance[0] != float('inf'):
+            if(distance == min_distance[0]):
+                print("Not Littering")
+            else:
+                print("Littering")
+        min_distance[0] = float('inf')
+    
+    return min_distance
+
 def callback(frame: np.ndarray, index: int) -> np.ndarray:
     # Perform object detection using Ultralytics YOLO model
     results = model(frame)[0]
@@ -115,7 +221,7 @@ def video_feed(request):
         while True:
             with video_thread.lock:
                 frame_rgb = video_thread.frame.copy()
-
+            process_frame(frame_rgb,min_distance)
             # Perform object detection on the frame
             annotated_frame = callback(frame_rgb, index=0)
             _, jpeg = cv2.imencode('.jpg', annotated_frame)
@@ -124,4 +230,6 @@ def video_feed(request):
 
     return StreamingHttpResponse(generate(), content_type='multipart/x-mixed-replace; boundary=frame')
 def livefeed(request):
-    return render(request, 'livefeed.html')
+    context = {}
+    context['logs']=logs
+    return render(request, 'livefeed.html',context)

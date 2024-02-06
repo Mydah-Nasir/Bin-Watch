@@ -94,8 +94,12 @@ if os.environ.get('DB_ENGINE') and os.environ.get('DB_ENGINE') == "mysql":
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'db.sqlite3',
+            'ENGINE': 'djongo',
+            'NAME': 'BinWatch',
+            'CLIENT': {
+            'host': 'localhost',
+            'port': 27017,
+        }
         }
     }
 

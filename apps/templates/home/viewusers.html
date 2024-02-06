@@ -53,24 +53,25 @@
                   </tr>
                 </thead>
                 <tbody>
+                  {% for user in users %}
                   <tr>
                     <td>
-                      342350
+                      {{user.qalamId}}
                     </td>
                     <td>
-                      anasir.bese20seecs
+                      {{user.username}}
                     </td>
                     <td>
-                      anasir.bese20seecs@seecs.edu.pk
+                      {{user.email}}
                     </td>
                     <td>
-                      Alina Nasir
+                      {{user.firstname}} {{user.lastname}}
                     </td>
                     <td>
-                        2020
+                        {{user.batch}}
                     </td>
                     <td>
-                        SEECS
+                        {{user.department}}
                     </td>
                     <td class="text-center">
                         <i class="fas fa-edit edit-icon"></i>
@@ -79,7 +80,8 @@
                       <i class="fas fa-trash delete-icon"></i>
                     </td>
                   </tr>
-                  <tr>
+                  {% endfor %}
+                  <!-- <tr>
                     <td>
                       333191
                     </td>
@@ -104,59 +106,7 @@
                     <td class="text-center">
                       <i class="fas fa-trash delete-icon"></i>
                     </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      344994
-                    </td>
-                    <td>
-                      fjamal.bese20seecs
-                    </td>
-                    <td>
-                      fjamal.bese20seecs@seecs.edu.pk
-                    </td>
-                    <td>
-                      Faiq Jamal
-                    </td>
-                    <td>
-                        2020
-                    </td>
-                    <td>
-                        SEECS
-                    </td>
-                    <td class="text-center">
-                        <i class="fas fa-edit edit-icon"></i>
-                    </td>
-                    <td class="text-center">
-                      <i class="fas fa-trash delete-icon"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      328042
-                    </td>
-                    <td>
-                      manas.me20smme
-                    </td>
-                    <td>
-                        manas.me20smme@student.nust.edu.pk
-                    </td>
-                    <td>
-                      Anas Nasir
-                    </td>
-                    <td>
-                        2020
-                    </td>
-                    <td>
-                        SMME
-                    </td>
-                    <td class="text-center">
-                        <i class="fas fa-edit edit-icon"></i>
-                    </td>
-                    <td class="text-center">
-                      <i class="fas fa-trash delete-icon"></i>
-                    </td>
-                  </tr>
+                  </tr> -->
                 </tbody>
               </table>
             </div>
