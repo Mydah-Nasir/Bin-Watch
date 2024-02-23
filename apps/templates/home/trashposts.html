@@ -15,11 +15,32 @@
             <h4 class="card-title">Trash Post #1</h4>
           </div>
           <div class="card-body">
-            <img src="{{ ASSETS_ROOT }}/img/livefeed.png" alt="Image Alt Text">
+            <img src="{{ ASSETS_ROOT }}/img/trashpost.png" alt="Image Alt Text">
             <div class="mt-3">
                 <span><i class="fa fa-thumbs-up"></i> &nbsp Like &nbsp&nbsp</span>
                 <span><i class="fa fa-comment">&nbsp Comment &nbsp&nbsp</i></span>
-                <span><i class="fa fa-share"></i>&nbsp Share</span>
+                <a href="{% url 'report_user' post_id=1 %}">
+                  <span><i class="fa fa-share"></i>&nbsp Report</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Trash Post #2</h4>
+          </div>
+          <div class="card-body">
+            <img src="{{ ASSETS_ROOT }}/img/littering.png" alt="Image Alt Text">
+            <div class="mt-3">
+                <span><i class="fa fa-thumbs-up"></i> &nbsp Like &nbsp&nbsp</span>
+                <span><i class="fa fa-comment">&nbsp Comment &nbsp&nbsp</i></span>
+                <a href="{% url 'report_user' post_id=2 %}">
+                  <span><i class="fa fa-share"></i>&nbsp Report</span>
+              </a>
             </div>
           </div>
         </div>

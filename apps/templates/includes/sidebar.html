@@ -44,13 +44,13 @@
                     </a>
                 </li>
                 <li class="{% if 'trashpost' in segment %} active {% endif %}">
-                    <a href="/trashposts.html">
+                    <a href="{% url 'trashpost' %}">
                         <i class="tim-icons icon-paper"></i>
                         <p>Trash Post</p>
                     </a>
                 </li>
                 <li class="{% if 'user' in segment %} active {% endif %}">
-                    <a href="/user.html">
+                    <a href="{% url 'user' %}">
                         <i class="tim-icons icon-single-02"></i>
                         <p>User Profile</p>
                     </a>
@@ -68,7 +68,7 @@
                     </a>
                 </li> -->
                 <li class="{% if 'activitylogs' in segment %} active {% endif %}">
-                    <a href="/activitylogs.html">
+                    <a href="{% url 'activitylogs' %}">
                         <i class="tim-icons icon-puzzle-10"></i>
                         <p>Activity Logs</p>
                     </a>
