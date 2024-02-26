@@ -86,6 +86,16 @@ def activitylogs(request):
     context['logs']=logs
     return render(request, 'home/activitylogs.html',context)
 
+def trashposts(request):
+    collection_name = dbname["Trashposts"]
+    trashposts_cursor_all = collection_name.find({})
+    trashposts = list(trashposts_cursor_all)
+    for trashpost in trashposts:
+        trashpost['trashpost_id'] = str(trashpost['_id'])
+    context = {}
+    context['trashposts']=trashposts
+    return render(request, 'home/trashposts.html',context)
+
 def deletelog(request, log_id):
     object_id = ObjectId(log_id)
     collection_name.delete_one({"_id": object_id})
@@ -275,6 +285,15 @@ model = YOLO(weights_path)  #actual path to YOLO model
 byte_tracker = sv.ByteTrack()
 annotator = sv.BoxAnnotator()
 
+def add_activty_log(result):
+    activity = {
+    "activity_type" : result,
+    "camera_name" : "C2",
+    "created_at": datetime.now()
+    }
+    collection_name = dbname["ActivityLog"]
+    collection_name.insert_many([activity])
+    
 
 import math
 def calculate_distance(box1, box2):
@@ -334,12 +353,14 @@ def process_frame(frame: np.ndarray, prevPerson, prevTrash, person_count, trash_
         if prevPerson[0] and person_count[0]>3:
             person_count[0] = 0
             result[0] = 'Littering'
+            add_activty_log(result[0])
             print(result[0])
     elif is_person:
         print(prevTrash[0],trash_count[0])
         if prevTrash[0]  and trash_count[0]>5:
             trash_count[0] = 0
             result[0] = 'Not Littering'
+            add_activty_log(result[0])
             print(result[0])
 
 def callback(frame: np.ndarray, index: int) -> np.ndarray:
