@@ -445,9 +445,6 @@ def livefeed(request):
     context['logs']=logs
     return render(request, 'livefeed.html',context)
 
-def trashpost(request):
-    return render(request, 'home/trashposts.html')
-
 def reportuser(request,post_id):
     msg = None
     success = False
