@@ -5,7 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 
 from django.urls import path, re_path
 from apps.home import views
-from .views import video_feed,livefeed,adduser,viewusers,userprofile,reportuser,trashpost,activitylogs
+from .views import video_feed,livefeed,adduser,viewusers,userprofile,reportuser,trashpost,activitylogs,deletelog,edituser,deleteuser
 
 
 urlpatterns = [
@@ -20,6 +20,9 @@ urlpatterns = [
     path('viewusers/',viewusers,name='viewusers'),
     path('activitylogs/',activitylogs,name='activitylogs'),
     path('user/',userprofile,name='user'),
+    path('delete-log/<str:log_id>/', deletelog, name='deletelog'),
+    path('deleteuser/<str:username>/',deleteuser , name='deleteuser'),
+    path('edituser/<str:username>/', edituser, name='edituser'),
     # Matches any html file
     re_path(r'^.*\.*', views.pages, name='pages'),
 

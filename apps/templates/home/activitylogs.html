@@ -19,6 +19,9 @@
                 <thead class=" text-primary">
                   <tr>
                     <th>
+                      ID
+                    </th>
+                    <th>
                       Type of Activity
                     </th>
                     <th>
@@ -42,6 +45,9 @@
                   {% for log in logs %}
                   <tr>
                     <td>
+                      {{log.log_id}}
+                    </td>
+                    <td>
                       {{log.activity_type}}
                     </td>
                     <td>
@@ -57,8 +63,15 @@
                       <i class="fas fa-eye video-icon" data-video-url="https://www.example.com/your-video-url.mp4"></i>
                     </td>
                     <td class="text-center">
-                      <i class="fas fa-trash delete-icon"></i>
+                      <a href="#" class="delete-icon" onclick="openConfirmationModal('{{ log.log_id }}')">
+                        <i class="fas fa-trash"></i>
+                      </a>
                     </td>
+                    <div id="confirmationModal_{{ log.log_id }}" class="card" style="display: none;">
+                      <p id="modalMessage_{{ log.log_id }}"></p>
+                      <a class="btn btn-fill btn-primary" href="{% url 'deletelog' log_id=log.log_id %}">Yes</a>
+                      <button class="btn btn-fill btn-primary" onclick="closeConfirmationModal('{{ log.log_id }}')">No</button>
+                    </div>
                   </tr>
                   <!-- <tr>
                     <td>
@@ -174,4 +187,16 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+<script>
+  function openConfirmationModal(log_id) {
+      // Display the modal
+      document.getElementById('modalMessage_'+log_id).innerHTML = "Are you sure you want to delete log " + log_id + "?";
+      document.getElementById('confirmationModal_'+log_id).style.display = 'block';
+  }
+
+  function closeConfirmationModal(log_id) {
+      // Close the modal
+      document.getElementById('confirmationModal_'+log_id).style.display = 'none';
+  }
+</script>
 {% endblock javascripts %}

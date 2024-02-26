@@ -5,11 +5,13 @@ Copyright (c) 2019 - present AppSeed.us
 
 from django import template
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate
 from django.template import loader
 from .forms import AddUserForm,EditProfileForm, ReportUserForm
 from django.urls import reverse
+from bson import ObjectId
 
 import cv2
 import os
@@ -68,19 +70,30 @@ def index(request):
 def viewusers(request):
     user_collection = dbname["User"]
     users_cursor = user_collection.find({})
-    
     users = list(users_cursor)
+    for user in users:
+        user['user_id'] = str(user['_id'])
     context = {'segment': 'viewusers','users':users}
-    html_template = loader.get_template('home/viewusers.html')
-    return HttpResponse(html_template.render(context, request))
+    return render(request, 'home/viewusers.html',context)
 
 def activitylogs(request):
     collection_name = dbname["ActivityLog"]
     logs_cursor_all = collection_name.find({})
     logs = list(logs_cursor_all)
+    for log in logs:
+        log['log_id'] = str(log['_id'])
     context = {}
     context['logs']=logs
     return render(request, 'home/activitylogs.html',context)
+
+def deletelog(request, log_id):
+    object_id = ObjectId(log_id)
+    collection_name.delete_one({"_id": object_id})
+    return redirect('activitylogs')
+
+def deleteuser(request, username):
+    user_collection.delete_one({"username": username})
+    return redirect('viewusers')
 
 def adduser(request):
     msg = None
@@ -169,6 +182,52 @@ def userprofile(request):
         form = EditProfileForm(initial=user)
 
     return render(request, "home/user.html", {"segment":'user',"username":username,"form": form, "msg": msg, "success": success})
+
+def edituser(request,username):
+    msg = None
+    success = False
+    user_cursor = user_collection.find({"username": username})
+    user_list = list(user_cursor)
+    user = user_list[0]
+    if request.method == "POST":
+        form = EditProfileForm(request.POST)
+        if form.is_valid():
+            firstname = form.cleaned_data.get("firstname")
+            email = form.cleaned_data.get("email")
+            qalamId = form.cleaned_data.get("qalamId")
+            lastname = form.cleaned_data.get("lastname")
+            department = form.cleaned_data.get("department")
+            batch = form.cleaned_data.get("batch")
+            
+
+            # Construct the update query
+            update_query = {
+                "$set": {
+                    "email":email,
+                    "qalamId":qalamId,
+                    "firstname": firstname,
+                    "lastname": lastname,
+                    "department": department,
+                    "batch": batch,
+                }
+            }
+
+            # Update the user document based on the username
+            result = user_collection.update_one({"username": username}, update_query)
+
+            if result.modified_count > 0:
+                msg = 'User updated successfully.'
+                success = True
+            else:
+                msg = 'User not found or update failed.'
+                success = False
+
+        else:
+            msg = 'Form is not valid'
+    else:
+        form = EditProfileForm(initial=user)
+
+    return render(request, "home/edituser.html", {"segment":'user',"username":username,"form": form, "msg": msg, "success": success})
 
 @login_required(login_url="/login/")
 def pages(request):

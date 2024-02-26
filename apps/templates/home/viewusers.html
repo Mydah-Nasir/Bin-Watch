@@ -74,11 +74,20 @@
                         {{user.department}}
                     </td>
                     <td class="text-center">
+                      <a href="{% url 'edituser' username=user.username %}" class="edit-icon">
                         <i class="fas fa-edit edit-icon"></i>
+                      </a>
                     </td>
                     <td class="text-center">
-                      <i class="fas fa-trash delete-icon"></i>
+                      <a href="#" class="delete-icon" onclick="openConfirmationModal('{{ user.username }}')">
+                        <i class="fas fa-trash"></i>
+                      </a>
                     </td>
+                    <div id="confirmationModal_{{ user.username }}" class="card" style="display: none;">
+                      <p id="modalMessage_{{ user.username }}"></p>
+                      <a class="btn btn-fill btn-primary" href="{% url 'deleteuser' username=user.username %}">Yes</a>
+                      <button class="btn btn-fill btn-primary" onclick="closeConfirmationModal('{{ user.username }}')">No</button>
+                    </div>                  
                   </tr>
                   {% endfor %}
                   <!-- <tr>
@@ -119,4 +128,17 @@
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
-{% block javascripts %}{% endblock javascripts %}
+{% block javascripts %}
+<script>
+  function openConfirmationModal(username) {
+      // Display the modal
+      document.getElementById('modalMessage_'+username).innerHTML = "Are you sure you want to delete user " + username + "?";
+      document.getElementById('confirmationModal_'+username).style.display = 'block';
+  }
+
+  function closeConfirmationModal(username) {
+      // Close the modal
+      document.getElementById('confirmationModal_'+username).style.display = 'none';
+  }
+</script>
+{% endblock javascripts %}
