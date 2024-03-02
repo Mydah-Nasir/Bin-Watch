@@ -71,21 +71,28 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-6 pr-md-1">
                   <div class="form-group">
                     <label>Department</label>
                     {{ form.department }}
                   </div>
                   <span class="text-danger">{{ form.department.errors }}</span>
                 </div>
-              </div>
-              <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-6 pl-md-1">
                   <div class="form-group">
                     <label>Batch</label>
                     {{ form.batch }}
                   </div>
                   <span class="text-danger">{{ form.batch.errors }}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label>Is Admin</label>
+                    {{ form.is_admin }}
+                  </div>
+                  <span class="text-danger">{{ form.is_admin.errors }}</span>
                 </div>
               </div>
           </div>

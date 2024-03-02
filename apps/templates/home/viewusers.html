@@ -44,6 +44,9 @@
                     <th>
                       Department
                     </th>
+                    <th>
+                      Role
+                    </th>
                     <th class="text-center">
                         Edit User
                     </th>
@@ -73,6 +76,13 @@
                     <td>
                         {{user.department}}
                     </td>
+                    <td>
+                      {% if user.is_admin == "True" %}
+                          Admin
+                      {% else %}
+                          User
+                      {% endif %}
+                  </td>                                                           
                     <td class="text-center">
                       <a href="{% url 'edituser' username=user.username %}" class="edit-icon">
                         <i class="fas fa-edit edit-icon"></i>

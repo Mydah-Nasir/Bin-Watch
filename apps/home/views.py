@@ -9,10 +9,10 @@ from django.shortcuts import redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate
 from django.template import loader
-from .forms import AddUserForm,EditProfileForm, ReportUserForm
+from .forms import AddUserForm,EditProfileForm, ReportUserForm, EditUserForm
 from django.urls import reverse
 from bson import ObjectId
-
+from .models import ActivityLog
 import cv2
 import os
 import threading
@@ -63,8 +63,23 @@ users = list(users_cursor)
 
 @login_required(login_url="/login/")
 def index(request):
-    context = {'segment': 'index','logs':logs_index}
-    html_template = loader.get_template('home/index.html')
+    username = str(request.user)
+    user_cursor = user_collection.find({"username": username})
+    user_list = list(user_cursor)
+    user = user_list[0]
+    is_admin = user['is_admin']
+    collection_name = dbname["Trashposts"]
+    trashposts_cursor_all = collection_name.find({})
+    trashposts = list(trashposts_cursor_all)
+    for trashpost in trashposts:
+        trashpost['trashpost_id'] = str(trashpost['_id'])
+    context = {}
+    context['trashposts']=trashposts
+    context['segment'] = 'index'
+    if(is_admin == "True"):
+        html_template = loader.get_template('home/index.html')
+    else:
+        html_template = loader.get_template('home/trashposts.html')
     return HttpResponse(html_template.render(context, request))
 
 def viewusers(request):
@@ -105,6 +120,14 @@ def deleteuser(request, username):
     user_collection.delete_one({"username": username})
     return redirect('viewusers')
 
+def sidebar(request):
+    username = str(request.user)
+    user_cursor = user_collection.find({"username": username})
+    user_list = list(user_cursor)
+    user = user_list[0]
+    is_admin = user['is_admin']
+    return { 'is_admin' : is_admin }
+
 def adduser(request):
     msg = None
     success = False
@@ -122,6 +145,7 @@ def adduser(request):
             department = form.cleaned_data.get("department")
             batch = form.cleaned_data.get("batch")
             email = form.cleaned_data.get("email")
+            is_admin = form.cleaned_data.get("is_admin")
 
             user = {
                 'username':username,
@@ -131,6 +155,7 @@ def adduser(request):
                 'department':department,
                 'batch':batch,
                 'email':email,
+                'is_admin':is_admin
             }
             user_collection.insert_many([user])
 
@@ -200,7 +225,7 @@ def edituser(request,username):
     user_list = list(user_cursor)
     user = user_list[0]
     if request.method == "POST":
-        form = EditProfileForm(request.POST)
+        form = EditUserForm(request.POST)
         if form.is_valid():
             firstname = form.cleaned_data.get("firstname")
             email = form.cleaned_data.get("email")
@@ -208,7 +233,7 @@ def edituser(request,username):
             lastname = form.cleaned_data.get("lastname")
             department = form.cleaned_data.get("department")
             batch = form.cleaned_data.get("batch")
-            
+            is_admin = form.cleaned_data.get("is_admin")
 
             # Construct the update query
             update_query = {
@@ -219,6 +244,7 @@ def edituser(request,username):
                     "lastname": lastname,
                     "department": department,
                     "batch": batch,
+                    "is_admin": is_admin
                 }
             }
 
@@ -235,7 +261,7 @@ def edituser(request,username):
         else:
             msg = 'Form is not valid'
     else:
-        form = EditProfileForm(initial=user)
+        form = EditUserForm(initial=user)
 
     return render(request, "home/edituser.html", {"segment":'user',"username":username,"form": form, "msg": msg, "success": success})
 
@@ -245,6 +271,7 @@ def pages(request):
     context['logs']=logs
     context['users']=users
     username = str(request.user)
+    user_collection = dbname["User"]
     user_cursor = user_collection.find({"username": username})
     user = list(user_cursor)
     context['user']=user[0]
@@ -286,13 +313,16 @@ byte_tracker = sv.ByteTrack()
 annotator = sv.BoxAnnotator()
 
 def add_activty_log(result):
-    activity = {
-    "activity_type" : result,
-    "camera_name" : "C2",
-    "created_at": datetime.now()
-    }
-    collection_name = dbname["ActivityLog"]
-    collection_name.insert_many([activity])
+    if result[0] == '':
+        return
+    elif result[0]=='Littering' or result[0]=='Not Littering':
+        activity = ActivityLog.objects.create(
+        activity_type = result[0],
+        camera_name = "C2",
+        created_at = datetime.now()
+        )
+        # collection_name = dbname["ActivityLog"]
+        # collection_name.insert_many([activity])
     
 
 import math
@@ -320,11 +350,22 @@ def is_overlap(box1, box2):
     print('No overlap')
     return False  # Bounding boxes do not overlap
 
+def save_frame(frame, filename):
+    # Specify the directory where you want to save the frame
+    save_dir = os.path.join(os.getcwd(), "apps", "static", "assets", "littering_images")
+    os.makedirs(save_dir, exist_ok=True)  # Create the directory if it doesn't exist
+    
+    # Convert frame from BGR to RGB
+    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    # Save the frame in the specified directory
+    save_path = os.path.join(save_dir, filename)
+    cv2.imwrite(save_path, frame_rgb)
 
 def process_frame(frame: np.ndarray, prevPerson, prevTrash, person_count, trash_count, result):
     detections = model(frame)[0]
     is_trash = False
     is_person = False
+    result[0]=''
     for detection in detections:
         class_number = int(detection.boxes.cls[0].item())
         class_name = detection.names[class_number]
@@ -353,14 +394,14 @@ def process_frame(frame: np.ndarray, prevPerson, prevTrash, person_count, trash_
         if prevPerson[0] and person_count[0]>3:
             person_count[0] = 0
             result[0] = 'Littering'
-            add_activty_log(result[0])
+            #add_activty_log('Littering')
             print(result[0])
     elif is_person:
         print(prevTrash[0],trash_count[0])
         if prevTrash[0]  and trash_count[0]>5:
             trash_count[0] = 0
             result[0] = 'Not Littering'
-            add_activty_log(result[0])
+            #add_activty_log('Not Littering')
             print(result[0])
 
 def callback(frame: np.ndarray, index: int) -> np.ndarray:
@@ -368,7 +409,6 @@ def callback(frame: np.ndarray, index: int) -> np.ndarray:
     results = model(frame)[0]
     detections = sv.Detections.from_ultralytics(results)
     detections = byte_tracker.update_with_detections(detections)
-
     labels = [
         f"#{tracker_id} {model.names[class_id]} {confidence:0.2f}"
         for _, _, confidence, class_id, tracker_id
@@ -402,7 +442,7 @@ class VideoCaptureThread(threading.Thread):
         self.cap.release()
 
 # Initialize the video capture thread
-video_thread = VideoCaptureThread(video_url)
+video_thread = VideoCaptureThread(webcam_url)
 video_thread.start()
 
 @gzip.gzip_page
@@ -412,6 +452,7 @@ def video_feed(request):
             with video_thread.lock:
                 frame_rgb = video_thread.frame.copy()
             process_frame(frame_rgb,prevPerson, prevTrash, person_count, trash_count, result)
+            #add_activty_log(result)
             # Perform object detection on the frame
             annotated_frame = callback(frame_rgb, index=0)
             _, jpeg = cv2.imencode('.jpg', annotated_frame)

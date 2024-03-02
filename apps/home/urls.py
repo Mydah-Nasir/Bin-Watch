@@ -5,7 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 
 from django.urls import path, re_path
 from apps.home import views
-from .views import video_feed,livefeed,adduser,viewusers,userprofile,reportuser,activitylogs,deletelog,edituser,deleteuser
+from .views import video_feed,livefeed,adduser,viewusers,userprofile,reportuser,activitylogs,deletelog,edituser,deleteuser,trashposts
 
 
 urlpatterns = [

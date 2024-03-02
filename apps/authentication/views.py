@@ -53,6 +53,7 @@ def register_user(request):
             department = form.cleaned_data.get("department")
             batch = form.cleaned_data.get("batch")
             email = form.cleaned_data.get("email")
+            is_admin = "False"
 
             user = {
                 'username':username,
@@ -62,6 +63,7 @@ def register_user(request):
                 'department':department,
                 'batch':batch,
                 'email':email,
+                'is_admin': is_admin
             }
             collection_name.insert_many([user])
 
