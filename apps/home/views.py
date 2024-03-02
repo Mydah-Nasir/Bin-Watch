@@ -12,7 +12,6 @@ from django.template import loader
 from .forms import AddUserForm,EditProfileForm, ReportUserForm, EditUserForm
 from django.urls import reverse
 from bson import ObjectId
-from .models import ActivityLog
 import cv2
 import os
 import threading
@@ -68,14 +67,18 @@ def index(request):
     user_list = list(user_cursor)
     user = user_list[0]
     is_admin = user['is_admin']
-    collection_name = dbname["Trashposts"]
+    collection_name = dbname["ActivityLog"]
     trashposts_cursor_all = collection_name.find({})
     trashposts = list(trashposts_cursor_all)
+    logs_cursor_all = collection_name.find({})
+    logs = list(logs_cursor_all)
     for trashpost in trashposts:
         trashpost['trashpost_id'] = str(trashpost['_id'])
+        trashpost['img_url'] = trashpost['created_at'].strftime("%Y-%m-%d_%H-%M-%S") + '.jpg'
     context = {}
     context['trashposts']=trashposts
     context['segment'] = 'index'
+    context['logs']=logs
     if(is_admin == "True"):
         html_template = loader.get_template('home/index.html')
     else:
@@ -108,6 +111,7 @@ def activitylogs(request):
         log['log_id'] = str(log['_id'])
     context = {}
     context['logs']=logs
+    context['segment']='activitylogs'
     return render(request, 'home/activitylogs.html',context)
 
 def trashposts(request):
@@ -118,6 +122,7 @@ def trashposts(request):
         trashpost['trashpost_id'] = str(trashpost['_id'])
         trashpost['img_url'] = trashpost['created_at'].strftime("%Y-%m-%d_%H-%M-%S") + '.jpg'
     context = {}
+    context['segment']='trashpost'
     context['trashposts']=trashposts
     return render(request, 'home/trashposts.html',context)
 
@@ -501,6 +506,7 @@ def video_path(request):
 def livefeed(request):
     context = {}
     context['logs']=logs
+    context['segment']='livefeed'
     return render(request, 'livefeed.html',context)
 
 def reportuser(request,post_id):

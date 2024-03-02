@@ -66,12 +66,15 @@
                         <p>View Users</p>
                     </a>
                 </li>
+                {% endif %}
+                {% if is_admin == "True" %}
                 <li class="{% if 'viewreports' in segment %} active {% endif %}">
                     <a href="{% url 'viewreports' %}">
-                        <i class="fas fa-users"></i>
+                        <i class="tim-icons icon-notes"></i>
                         <p>View Reports</p>
                     </a>
                 </li>
+                {% endif %}
                 <!-- <li class="{% if 'tables' in segment %} active {% endif %}">
                     <a href="/tables.html">
                         <i class="tim-icons icon-puzzle-10"></i>
