@@ -76,6 +76,15 @@ def viewusers(request):
     context = {'segment': 'viewusers','users':users}
     return render(request, 'home/viewusers.html',context)
 
+def viewreports(request):
+    report_collection = dbname["Report"]
+    reports_cursor = report_collection.find({})
+    reports = list(reports_cursor)
+    for report in reports:
+        report['report_id'] = str(report['_id'])
+    context = {'segment': 'viewreports','reports':reports}
+    return render(request, 'home/viewreports.html',context)
+
 def activitylogs(request):
     collection_name = dbname["ActivityLog"]
     logs_cursor_all = collection_name.find({})
@@ -87,11 +96,12 @@ def activitylogs(request):
     return render(request, 'home/activitylogs.html',context)
 
 def trashposts(request):
-    collection_name = dbname["Trashposts"]
+    collection_name = dbname["ActivityLog"]
     trashposts_cursor_all = collection_name.find({})
     trashposts = list(trashposts_cursor_all)
     for trashpost in trashposts:
         trashpost['trashpost_id'] = str(trashpost['_id'])
+        trashpost['img_url'] = trashpost['created_at'].strftime("%Y-%m-%d_%H-%M-%S") + '.jpg'
     context = {}
     context['trashposts']=trashposts
     return render(request, 'home/trashposts.html',context)
@@ -320,6 +330,22 @@ def is_overlap(box1, box2):
     print('No overlap')
     return False  # Bounding boxes do not overlap
 
+def save_frame(frame, filename):
+    created_at = datetime.now()
+    activity = {
+    "activity_type" : 'Littering',
+    "camera_name" : "C2",
+    "created_at": datetime.now(),
+    }
+    collection_name = dbname["ActivityLog"]
+    collection_name.insert_many([activity])
+    # Specify the directory where you want to save the frame
+    save_dir = os.path.join(os.getcwd(), "apps", "static", "assets", "littering_images")
+    os.makedirs(save_dir, exist_ok=True)  # Create the directory if it doesn't exist
+    # Save the frame in the specified directory
+    filename = created_at.strftime("%Y-%m-%d_%H-%M-%S") + '.jpg'
+    save_path = os.path.join(save_dir, filename)
+    cv2.imwrite(save_path, frame)
 
 def process_frame(frame: np.ndarray, prevPerson, prevTrash, person_count, trash_count, result):
     detections = model(frame)[0]
@@ -354,6 +380,7 @@ def process_frame(frame: np.ndarray, prevPerson, prevTrash, person_count, trash_
             person_count[0] = 0
             result[0] = 'Littering'
             add_activty_log(result[0])
+            save_frame(frame, "littering_frame.jpg")
             print(result[0])
     elif is_person:
         print(prevTrash[0],trash_count[0])
@@ -402,7 +429,7 @@ class VideoCaptureThread(threading.Thread):
         self.cap.release()
 
 # Initialize the video capture thread
-video_thread = VideoCaptureThread(video_url)
+video_thread = VideoCaptureThread(webcam_url)
 video_thread.start()
 
 @gzip.gzip_page

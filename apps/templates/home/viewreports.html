@@ -1,0 +1,141 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} View Users {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card ">
+          <div class="card-header">
+            <div class="row">
+            <div class="col-md-10">
+                <h4 class="card-title">View Reports</h4>
+            </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table tablesorter " id="">
+                <thead class=" text-primary">
+                  <tr>
+                    <th>
+                      First Name
+                    </th>
+                    <th>
+                      Last Name
+                    </th>
+                    <th>
+                      Address
+                    </th>
+                    <!-- <th>
+                      Name
+                    </th>
+                    <th>
+                      Batch
+                    </th>
+                    <th>
+                      Department
+                    </th> -->
+                    <th class="text-center">
+                        Verify Report
+                    </th>
+                    <th class="text-center">
+                      Delete Report
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for report in reports %}
+                  <tr>
+                    <td>
+                      {{report.firstname}}
+                    </td>
+                    <td>
+                      {{report.lastname}}
+                    </td>
+                    <td>
+                      {{report.address}}
+                    </td>
+                    <!-- <td>
+                      {{user.firstname}} {{user.lastname}}
+                    </td>
+                    <td>
+                        {{user.batch}}
+                    </td>
+                    <td>
+                        {{user.department}}
+                    </td> -->
+                    <!-- <td class="text-center">
+                      <a href="{% url 'edituser' username=user.username %}" class="edit-icon">
+                        <i class="fas fa-edit edit-icon"></i>
+                      </a>
+                    </td>
+                    <td class="text-center">
+                      <a href="#" class="delete-icon" onclick="openConfirmationModal('{{ user.username }}')">
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </td>
+                    <div id="confirmationModal_{{ user.username }}" class="card" style="display: none;">
+                      <p id="modalMessage_{{ user.username }}"></p>
+                      <a class="btn btn-fill btn-primary" href="{% url 'deleteuser' username=user.username %}">Yes</a>
+                      <button class="btn btn-fill btn-primary" onclick="closeConfirmationModal('{{ user.username }}')">No</button>
+                    </div>                   -->
+                  </tr>
+                  {% endfor %}
+                  <!-- <tr>
+                    <td>
+                      333191
+                    </td>
+                    <td>
+                      mnasir.bese20seecs
+                    </td>
+                    <td>
+                      mnasir.bese20seecs@seecs.edu.pk
+                    </td>
+                    <td>
+                      Mydah Nasir
+                    </td>
+                    <td>
+                        2020
+                    </td>
+                    <td>
+                        SEECS
+                    </td>
+                    <td class="text-center">
+                        <i class="fas fa-edit edit-icon"></i>
+                    </td>
+                    <td class="text-center">
+                      <i class="fas fa-trash delete-icon"></i>
+                    </td>
+                  </tr> -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script>
+  function openConfirmationModal(username) {
+      // Display the modal
+      document.getElementById('modalMessage_'+username).innerHTML = "Are you sure you want to delete user " + username + "?";
+      document.getElementById('confirmationModal_'+username).style.display = 'block';
+  }
+
+  function closeConfirmationModal(username) {
+      // Close the modal
+      document.getElementById('confirmationModal_'+username).style.display = 'none';
+  }
+</script>
+{% endblock javascripts %}

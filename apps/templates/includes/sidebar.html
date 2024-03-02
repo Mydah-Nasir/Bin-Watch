@@ -61,6 +61,12 @@
                         <p>View Users</p>
                     </a>
                 </li>
+                <li class="{% if 'viewreports' in segment %} active {% endif %}">
+                    <a href="{% url 'viewreports' %}">
+                        <i class="fas fa-users"></i>
+                        <p>View Reports</p>
+                    </a>
+                </li>
                 <!-- <li class="{% if 'tables' in segment %} active {% endif %}">
                     <a href="/tables.html">
                         <i class="tim-icons icon-puzzle-10"></i>
