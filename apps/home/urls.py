@@ -5,7 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 
 from django.urls import path, re_path
 from apps.home import views
-from .views import video_feed,livefeed,adduser,viewusers,userprofile,reportuser,activitylogs,deletelog,edituser,deleteuser,trashposts
+from .views import video_feed,livefeed,adduser,viewusers,userprofile,reportuser,activitylogs,deletelog,edituser,deleteuser,trashposts,viewreports
 
 
 urlpatterns = [
@@ -17,6 +17,7 @@ urlpatterns = [
     path('livefeed/', livefeed, name='livefeed'),
     path('adduser/', adduser, name='adduser'),
     path('viewusers/',viewusers,name='viewusers'),
+    path('viewreports/',viewreports,name='viewreports'),
     path('activitylogs/',activitylogs,name='activitylogs'),
     path('trashposts/',trashposts,name='trashposts'),
     path('user/',userprofile,name='user'),
