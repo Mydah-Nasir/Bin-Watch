@@ -196,10 +196,25 @@ class ReportUserForm(forms.Form):
                 "class": "form-control"
             }
         ))
-    address = forms.CharField(
+    department = forms.CharField(
         widget=forms.TextInput(
             attrs={
-                "placeholder": "Address",
+                "placeholder": "Department",
                 "class": "form-control"
             }
         ))
+
+class VerifyReportForm(forms.Form):
+    is_valid_choices = (
+        (False, "Not Verified"),
+        (True, "Verified")
+    )
+    is_valid = forms.ChoiceField(
+        choices=is_valid_choices,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control",
+                "placeholder": "Status",
+            }
+        )
+    )

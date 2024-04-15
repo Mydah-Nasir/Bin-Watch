@@ -9,13 +9,14 @@ from django.shortcuts import redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate
 from django.template import loader
-from .forms import AddUserForm,EditProfileForm, ReportUserForm, EditUserForm
+from .forms import AddUserForm,EditProfileForm, ReportUserForm, EditUserForm, VerifyReportForm
 from django.urls import reverse
 from bson import ObjectId
 import cv2
 import os
 import threading
 import math
+import json
 from django.http import StreamingHttpResponse
 from django.views.decorators import gzip
 from django.shortcuts import render
@@ -24,6 +25,7 @@ import numpy as np
 from ultralytics import YOLO
 from pymongo import MongoClient
 from datetime import datetime
+from .utils import CustomJSONEncoder
 
 client = MongoClient('localhost', 27017)
 rtsp_url = 'rtsp://admin:nust123456@192.168.0.118:554/Streaming/Channels/101'
@@ -34,6 +36,7 @@ prevTrash = [False]
 person_count = [0]
 trash_count = [0]
 result = ['']
+frame_buffer = []
 
 dbname = client['BinWatch']
 collection_name = dbname["ActivityLog"]
@@ -68,22 +71,21 @@ def index(request):
     user = user_list[0]
     is_admin = user['is_admin']
     collection_name = dbname["ActivityLog"]
-    trashposts_cursor_all = collection_name.find({})
+    trashposts_cursor_all = collection_name.find({}).sort('created_at', -1)
     trashposts = list(trashposts_cursor_all)
-    logs_cursor_all = collection_name.find({})
+    logs_cursor = collection_name.find({})
+    logs_index = list(logs_cursor)
+    logs_cursor_all = collection_name.find({}).sort('created_at', -1)
     logs = list(logs_cursor_all)
     for trashpost in trashposts:
         trashpost['trashpost_id'] = str(trashpost['_id'])
         trashpost['img_url'] = trashpost['created_at'].strftime("%Y-%m-%d_%H-%M-%S") + '.jpg'
-    context = {}
-    context['trashposts']=trashposts
-    context['segment'] = 'index'
-    context['logs']=logs
+
+    context = {'segment': 'index','trashposts':trashposts ,'logs':logs[:8] ,'logs_index': json.dumps(logs_index, cls=CustomJSONEncoder)}
     if(is_admin == "True"):
-        html_template = loader.get_template('home/index.html')
+        return render(request, 'home/index.html',context)
     else:
-        html_template = loader.get_template('home/trashposts.html')
-    return HttpResponse(html_template.render(context, request))
+        return render(request, 'home/trashposts.html',context)
 
 def viewusers(request):
     user_collection = dbname["User"]
@@ -105,7 +107,7 @@ def viewreports(request):
 
 def activitylogs(request):
     collection_name = dbname["ActivityLog"]
-    logs_cursor_all = collection_name.find({})
+    logs_cursor_all = collection_name.find({}).sort('created_at', -1)
     logs = list(logs_cursor_all)
     for log in logs:
         log['log_id'] = str(log['_id'])
@@ -116,7 +118,7 @@ def activitylogs(request):
 
 def trashposts(request):
     collection_name = dbname["ActivityLog"]
-    trashposts_cursor_all = collection_name.find({})
+    trashposts_cursor_all = collection_name.find({}).sort('created_at', -1)
     trashposts = list(trashposts_cursor_all)
     for trashpost in trashposts:
         trashpost['trashpost_id'] = str(trashpost['_id'])
@@ -130,6 +132,11 @@ def deletelog(request, log_id):
     object_id = ObjectId(log_id)
     collection_name.delete_one({"_id": object_id})
     return redirect('activitylogs')
+
+def deletereport(request, report_id):
+    object_id = ObjectId(report_id)
+    report_collection.delete_one({"_id": object_id})
+    return redirect('viewreports')
 
 def deleteuser(request, username):
     user_collection.delete_one({"username": username})
@@ -280,6 +287,45 @@ def edituser(request,username):
 
     return render(request, "home/edituser.html", {"segment":'user',"username":username,"form": form, "msg": msg, "success": success})
 
+def verifyreport(request,report_id):
+    msg = None
+    success = False
+    object_id = ObjectId(report_id)
+    report_cursor = report_collection.find({"_id": object_id})
+    report_list = list(report_cursor)
+    report = report_list[0]
+    firstname = report['firstname']
+    lastname = report['lastname']
+    department = report['department']
+    if request.method == "POST":
+        form = VerifyReportForm(request.POST)
+        if form.is_valid():
+            is_valid = form.cleaned_data.get("is_valid")
+
+            # Construct the update query
+            update_query = {
+                "$set": {
+                    "is_valid": is_valid
+                }
+            }
+
+            # Update the report document based on the id
+            result = report_collection.update_one({"_id": object_id}, update_query)
+
+            if result.modified_count > 0:
+                msg = 'Report updated successfully.'
+                success = True
+            else:
+                msg = 'Report not found or update failed.'
+                success = False
+
+        else:
+            msg = 'Form is not valid'
+    else:
+        form = VerifyReportForm(initial=report)
+
+    return render(request, "home/verifyreport.html", {"segment":'report',"firstname":firstname,'lastname':lastname,"department":department,"form": form, "msg": msg, "success": success})
+
 @login_required(login_url="/login/")
 def pages(request):
     context = {}
@@ -316,7 +362,7 @@ def pages(request):
 
 # Get the base directory of your Django project
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-video_url = 'http://192.168.100.24:8080/video'
+video_url = 'http://192.168.100.203:8080/video'
 
 # Construct the path to best.pt dynamically
 weights_path = os.path.join(BASE_DIR, 'static', 'assets', 'weights', 'best.pt')
@@ -365,28 +411,45 @@ def is_overlap(box1, box2):
     print('No overlap')
     return False  # Bounding boxes do not overlap
 
-def save_frame(frame, filename):
-    created_at = datetime.now()
-    activity = {
-    "activity_type" : 'Littering',
-    "camera_name" : "C2",
-    "created_at": datetime.now(),
-    }
-    collection_name = dbname["ActivityLog"]
-    collection_name.insert_many([activity])
-    # Specify the directory where you want to save the frame
-    save_dir = os.path.join(os.getcwd(), "apps", "static", "assets", "littering_images")
-    os.makedirs(save_dir, exist_ok=True)  # Create the directory if it doesn't exist
-    # Save the frame in the specified directory
-    filename = created_at.strftime("%Y-%m-%d_%H-%M-%S") + '.jpg'
-    save_path = os.path.join(save_dir, filename)
-    cv2.imwrite(save_path, frame)
+def save_frame(frame, activity):
+    if activity == 'Littering':
+        created_at = datetime.now()
+        activity = {
+        "activity_type" : 'Littering',
+        "camera_name" : "Hostel",
+        "created_at": datetime.now(),
+        }
+        collection_name = dbname["ActivityLog"]
+        collection_name.insert_many([activity])
+        # Specify the directory where you want to save the frame
+        save_dir = os.path.join(os.getcwd(), "apps", "static", "assets", "littering_images")
+        os.makedirs(save_dir, exist_ok=True)  # Create the directory if it doesn't exist
+        # Save the frame in the specified directory
+        filename = created_at.strftime("%Y-%m-%d_%H-%M-%S") + '.jpg'
+        save_path = os.path.join(save_dir, filename)
+        cv2.imwrite(save_path, frame)
+    elif activity == 'Not Littering':
+        created_at = datetime.now()
+        activity = {
+        "activity_type" : 'Not Littering',
+        "camera_name" : "Hostel",
+        "created_at": datetime.now(),
+        }
+        collection_name = dbname["ActivityLog"]
+        collection_name.insert_many([activity])
 
-def process_frame(frame: np.ndarray, prevPerson, prevTrash, person_count, trash_count, result):
+
+def process_frame(frame: np.ndarray, prevPerson, prevTrash, person_count, trash_count, result,frame_buffer):
     detections = model(frame)[0]
     is_trash = False
     is_person = False
     result[0]=''
+
+    # Create a buffer to store frames
+    if len(frame_buffer) >= 5:
+        frame_buffer.pop(0)  # Remove the oldest frame if buffer is full
+    frame_buffer.append(frame.copy())
+
     for detection in detections:
         class_number = int(detection.boxes.cls[0].item())
         class_name = detection.names[class_number]
@@ -415,8 +478,8 @@ def process_frame(frame: np.ndarray, prevPerson, prevTrash, person_count, trash_
         if prevPerson[0] and person_count[0]>3:
             person_count[0] = 0
             result[0] = 'Littering'
-            add_activty_log(result[0])
-            save_frame(frame, "littering_frame.jpg")
+            #add_activty_log(result[0])
+            save_frame(frame_buffer[0],'Littering')
             print(result[0])
     elif is_person:
         print(prevTrash[0],trash_count[0])
@@ -424,6 +487,7 @@ def process_frame(frame: np.ndarray, prevPerson, prevTrash, person_count, trash_
             trash_count[0] = 0
             result[0] = 'Not Littering'
             #add_activty_log('Not Littering')
+            save_frame(frame_buffer[0],'Not Littering')
             print(result[0])
 
 def callback(frame: np.ndarray, index: int) -> np.ndarray:
@@ -464,7 +528,7 @@ class VideoCaptureThread(threading.Thread):
         self.cap.release()
 
 # Initialize the video capture thread
-video_thread = VideoCaptureThread(webcam_url)
+video_thread = VideoCaptureThread(video_url)
 video_thread.start()
 
 @gzip.gzip_page
@@ -473,7 +537,7 @@ def video_feed(request):
         while True:
             with video_thread.lock:
                 frame_rgb = video_thread.frame.copy()
-            process_frame(frame_rgb,prevPerson, prevTrash, person_count, trash_count, result)
+            process_frame(frame_rgb,prevPerson, prevTrash, person_count, trash_count, result,frame_buffer)
             #add_activty_log(result)
             # Perform object detection on the frame
             annotated_frame = callback(frame_rgb, index=0)
@@ -518,12 +582,12 @@ def reportuser(request,post_id):
         if form.is_valid():
             firstname = form.cleaned_data.get("firstname")
             lastname = form.cleaned_data.get("lastname")
-            address = form.cleaned_data.get("address")
+            department = form.cleaned_data.get("department")
             
             report = {
                 'firstname':firstname,
                 'lastname':lastname,
-                'address':address,
+                'department':department,
                 'is_valid':'False',
                 'post_id':post_id
             }

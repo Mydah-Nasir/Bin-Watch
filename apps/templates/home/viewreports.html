@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} View Users {% endblock %} 
+{% block title %} View Reports {% endblock %} 
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %}
@@ -30,12 +30,12 @@
                       Last Name
                     </th>
                     <th>
-                      Address
-                    </th>
-                    <!-- <th>
-                      Name
+                      Department
                     </th>
                     <th>
+                      Status
+                    </th>
+                    <!-- <th>
                       Batch
                     </th>
                     <th>
@@ -59,32 +59,37 @@
                       {{report.lastname}}
                     </td>
                     <td>
-                      {{report.address}}
-                    </td>
-                    <!-- <td>
-                      {{user.firstname}} {{user.lastname}}
+                      {{report.department}}
                     </td>
                     <td>
+                      {% if report.is_valid == "True" %}
+                          Verified
+                      {% else %}
+                          Not Verified
+                      {% endif %}
+                    </td>
+                    <!-- <td>
                         {{user.batch}}
                     </td>
                     <td>
                         {{user.department}}
                     </td> -->
-                    <!-- <td class="text-center">
-                      <a href="{% url 'edituser' username=user.username %}" class="edit-icon">
+                    <td class="text-center">
+                      <a href="{% url 'verifyreport' report_id=report.report_id %}" class="edit-icon">
                         <i class="fas fa-edit edit-icon"></i>
                       </a>
                     </td>
                     <td class="text-center">
-                      <a href="#" class="delete-icon" onclick="openConfirmationModal('{{ user.username }}')">
+                      <a href="#" class="delete-icon" onclick="openConfirmationModal('{{ report.report_id }}')">
                         <i class="fas fa-trash"></i>
                       </a>
                     </td>
-                    <div id="confirmationModal_{{ user.username }}" class="card" style="display: none;">
-                      <p id="modalMessage_{{ user.username }}"></p>
-                      <a class="btn btn-fill btn-primary" href="{% url 'deleteuser' username=user.username %}">Yes</a>
-                      <button class="btn btn-fill btn-primary" onclick="closeConfirmationModal('{{ user.username }}')">No</button>
-                    </div>                   -->
+                    <div id="confirmationModal_{{ report.report_id }}" class="card" style="display: none;">
+                      <p id="modalMessage_{{ report.report_id }}"></p>
+                      <a class="btn btn-fill btn-primary" href="{% url 'deletereport' report_id=report.report_id %}">Yes</a>
+                      <button class="btn btn-fill btn-primary" onclick="closeConfirmationModal('{{ report.report_id }}')">No</button>
+                    </div>                  
+
                   </tr>
                   {% endfor %}
                   <!-- <tr>
@@ -127,15 +132,15 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 <script>
-  function openConfirmationModal(username) {
+  function openConfirmationModal(report_id) {
       // Display the modal
-      document.getElementById('modalMessage_'+username).innerHTML = "Are you sure you want to delete user " + username + "?";
-      document.getElementById('confirmationModal_'+username).style.display = 'block';
+      document.getElementById('modalMessage_'+report_id).innerHTML = "Are you sure you want to delete report " + report_id + "?";
+      document.getElementById('confirmationModal_'+report_id).style.display = 'block';
   }
 
-  function closeConfirmationModal(username) {
+  function closeConfirmationModal(report_id) {
       // Close the modal
-      document.getElementById('confirmationModal_'+username).style.display = 'none';
+      document.getElementById('confirmationModal_'+report_id).style.display = 'none';
   }
 </script>
 {% endblock javascripts %}

@@ -9,11 +9,12 @@
 
   <div class="content">
     {% for trashpost in trashposts %}
+    {% if trashpost.activity_type == "Littering" %}
     <div class="row">
       <div class="col-md-8">
         <div class="card">
           <div class="card-header">
-            <h4 class="card-title">Trash Post #1</h4>
+            <h4 class="card-title">Trash Post {{trashpost.trashpost_id}}</h4>
           </div>
           <div class="card-body">
             <img src="{{ ASSETS_ROOT }}/littering_images/{{trashpost.img_url}}" alt="Image Alt Text">
@@ -28,6 +29,7 @@
         </div>
       </div>
     </div>
+    {% endif %}
     {% endfor %}
     <!-- <div class="row">
       <div class="col-md-8">

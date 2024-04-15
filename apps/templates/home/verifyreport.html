@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} User Profile {% endblock %} 
+{% block title %} Verify Report {% endblock %} 
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %}
@@ -12,7 +12,7 @@
       <div class="col-md-8">
         <div class="card">
           <div class="card-header">
-            <h5 class="title">Report User</h5>
+            <h5 class="title">Verify Report</h5>
             <h6 class="card-category">
               {% if msg %}
                   <span class="text-danger">{{ msg | safe }}</span>
@@ -21,11 +21,11 @@
                       Add your credentials
                   </span>
               {% endif %}  
-          </h6>     
+          </h6>
           </div>
           {% if success %}
             <div class="card-footer text-center">
-              <a href="{% url 'trashposts' %}" class="btn btn-fill btn-primary">View Trash Posts</a>
+              <a href="{% url 'viewreports' %}" class="btn btn-fill btn-primary">View Reports</a>
             </div>
             {% else %}
           <div class="card-body">
@@ -33,33 +33,39 @@
               {% csrf_token %}
               <div class="row">
                 <div class="col-md-6 pr-md-1">
-                  <div class="form-group">
-                    <label>First Name</label>
-                    {{ form.firstname }}
-                  </div>
-                  <span class="text-danger">{{ form.firstname.errors }}</span>
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" name="firstname" class="form-control" disabled value="{{ firstname }}">
+                    </div>
+                    <span class="text-danger">{{ form.firstname.errors }}</span>
                 </div>
                 <div class="col-md-6 pl-md-1">
                   <div class="form-group">
                     <label>Last Name</label>
-                    {{ form.lastname }}
-                </div>
-                <span class="text-danger">{{ form.lastname.errors }}</span>
+                    <input type="text" name="lastname" class="form-control" disabled value="{{ lastname }}">
+                  </div>
+                  <span class="text-danger">{{ form.lastname.errors }}</span>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-6 pr-md-1">
                   <div class="form-group">
                     <label>Department</label>
-                    {{ form.department }}
+                    <input type="text" name="department" class="form-control" disabled value="{{ department }}">
+                  </div>
+                  <span class="text-danger">{{ form.department.errors }}</span>
                 </div>
-                <span class="text-danger">{{ form.department.errors }}</span>
+                <div class="col-md-6 pl-md-1">
+                    <div class="form-group">
+                        <label>Is Verified</label>
+                        {{ form.is_valid }}
+                    </div>
+                    <span class="text-danger">{{ form.is_valid.errors }}</span>
                 </div>
               </div>
-
           </div>
           <div class="card-footer">
-            <button type="submit" name="report_user" class="btn btn-fill btn-primary">Save</button>
+            <button type="submit" name="report" class="btn btn-fill btn-primary">Save</button>
           </div>
         </form>
         {% endif %}
