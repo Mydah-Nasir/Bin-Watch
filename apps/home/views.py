@@ -146,12 +146,12 @@ def deleteuser(request, username):
     return redirect('viewusers')
 
 def sidebar(request):
-    username = str(request.user)
-    user_cursor = user_collection.find({"username": username})
-    user_list = list(user_cursor)
-    user = user_list[0]
-    is_admin = user['is_admin']
-    return { 'is_admin' : is_admin }
+    # username = str(request.user)
+    # user_cursor = user_collection.find({"username": username})
+    # user_list = list(user_cursor)
+    # user = user_list[0]
+    # is_admin = user['is_admin']
+    return { 'is_admin' : True }
 
 def adduser(request):
     msg = None
