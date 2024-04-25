@@ -392,7 +392,7 @@ video_url = 'http://192.168.100.203:8080/video'
 
 # Construct the path to best.pt dynamically
 weights_path = os.path.join(BASE_DIR, 'static', 'assets', 'weights', 'best.pt')
-video_path = os.path.join(BASE_DIR, 'static', 'assets', 'img', 'resulta.mp4')
+#video_path = os.path.join(BASE_DIR, 'static', 'assets', 'img', 'resulta.mp4')
 
 model = YOLO(weights_path)  #actual path to YOLO model
 
