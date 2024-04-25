@@ -4,6 +4,8 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 import os, environ
+import django_heroku
+import dj_database_url
 
 env = environ.Env(
     # set casting, default value
@@ -152,6 +154,6 @@ STATICFILES_DIRS = (
     os.path.join(CORE_DIR, 'apps/static'),
 )
 
-
+django_heroku.settings(locals())
 #############################################################
 #############################################################
