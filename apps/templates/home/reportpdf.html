@@ -43,34 +43,34 @@
         <table>
             <tr>
                 <th>First Name</th>
-                <td>Mydah</td>
+                <td>{{firstname}}</td>
             </tr>
             <tr>
                 <th>Last Name</th>
-                <td>Nasir</td>
+                <td>{{lastname}}</td>
             </tr>
             <tr>
                 <th>Username</th>
-                <td>mydah123</td>
+                <td>{{username}}</td>
             </tr>
             <tr>
                 <th>Date</th>
-                <td>23 April 2024</td>
+                <td>{{ created_at|date:'Y-m-d' }}</td>
             </tr>
             <tr>
                 <th>Time</th>
-                <td>6:00 PM</td>
+                <td>{{created_at|time:'H:i:s'}}</td>
             </tr>
             <tr>
                 <th>Camera Name</th>
-                <td>SEECS</td>
+                <td>{{camera_name}}</td>
             </tr>
         </table>
         <div class="card-body">
             <img
-              src="E:\FYP\BinWatch2\Bin-Watch\apps\static\assets\littering_images\2024-03-01_19-59-36.jpg"
-              alt="Image Alt Text"
-            />
+            src="apps/static/assets/littering_images/{{img_url}}"
+            alt="Image Alt Text"
+          />
           </div>
     </div>
 </body>

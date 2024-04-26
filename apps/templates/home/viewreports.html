@@ -33,7 +33,7 @@
                       Department
                     </th>
                     <th>
-                      Status
+                      Username
                     </th>
                     <!-- <th>
                       Batch
@@ -42,7 +42,7 @@
                       Department
                     </th> -->
                     <th class="text-center">
-                        Verify Report
+                        Report Download
                     </th>
                     <th class="text-center">
                       Delete Report
@@ -62,11 +62,7 @@
                       {{report.department}}
                     </td>
                     <td>
-                      {% if report.is_valid == "True" %}
-                          Verified
-                      {% else %}
-                          Not Verified
-                      {% endif %}
+                     {{report.username}}
                     </td>
                     <!-- <td>
                         {{user.batch}}
@@ -75,7 +71,7 @@
                         {{user.department}}
                     </td> -->
                     <td class="text-center">
-                      <a href="{% url 'verifyreport' report_id=report.report_id %}" class="edit-icon">
+                      <a href="{% url 'verifyreport' report_id=report.report_id %}" class="edit-icon" target="_blank">
                         <i class="fas fa-edit edit-icon"></i>
                       </a>
                     </td>

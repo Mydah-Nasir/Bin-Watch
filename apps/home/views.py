@@ -96,20 +96,20 @@ def index(request):
 
 def viewusers(request):
     user_collection = dbname["User"]
-    username = str(request.user)
-    user_cursor = user_collection.find({"username": username})
-    user_list = list(user_cursor)
-    user = user_list[0]
-    is_admin = user['is_admin']
+    # username = str(request.user)
+    # user_cursor = user_collection.find({"username": username})
+    # user_list = list(user_cursor)
+    # user = user_list[0]
+    # is_admin = user['is_admin']
     users_cursor = user_collection.find({})
     users = list(users_cursor)
     for user in users:
         user['user_id'] = str(user['_id'])
     context = {'segment': 'viewusers','users':users}
-    if(is_admin == "True"):
-        return render(request, 'home/viewusers.html',context)
-    else:
-        return render(request, 'home/page-403.html',context)
+    # if(is_admin == "True"):
+    return render(request, 'home/viewusers.html',context)
+    # else:
+    #     return render(request, 'home/page-403.html',context)
 
 
 def viewreports(request):
@@ -330,12 +330,11 @@ def generate_pdf(request):
 
 def verifyreport(request,report_id):
     collection_name = dbname["ActivityLog"]
-    msg = None
-    success = False
     object_id = ObjectId(report_id)
     report_cursor = report_collection.find({"_id": object_id})
     report_list = list(report_cursor)
     report = report_list[0]
+    username = report['username']
     firstname = report['firstname']
     lastname = report['lastname']
     department = report['department']
@@ -347,34 +346,20 @@ def verifyreport(request,report_id):
     img_url = post['created_at'].strftime("%Y-%m-%d_%H-%M-%S") + '.jpg'
     camera_name = post['camera_name']
     created_at = post['created_at']
-    if request.method == "POST":
-        form = VerifyReportForm(request.POST)
-        if form.is_valid():
-            is_valid = form.cleaned_data.get("is_valid")
-
-            # Construct the update query
-            update_query = {
-                "$set": {
-                    "is_valid": is_valid
-                }
-            }
-
-            # Update the report document based on the id
-            result = report_collection.update_one({"_id": object_id}, update_query)
-
-            if result.modified_count > 0:
-                msg = 'Report updated successfully.'
-                success = True
-            else:
-                msg = 'Report not found or update failed.'
-                success = False
-
-        else:
-            msg = 'Form is not valid'
-    else:
-        form = VerifyReportForm(initial=report)
-
-    return render(request, "home/verifyreport.html", {"segment":'report',"firstname":firstname,'lastname':lastname,'img_url':img_url,"department":department,'created_at':created_at,'camera_name':camera_name,"form": form, "msg": msg, "success": success})
+    context = {
+        'username': username,
+        'firstname': firstname,
+        'lastname': lastname,
+        'department': department,
+        'created_at': created_at,
+        'camera_name': camera_name,
+        'img_url': img_url,
+    }
+    
+    html = render_to_string('home/reportpdf.html', context)
+    pdf = HttpResponse(content_type='application/pdf')
+    pisa.CreatePDF(html, dest=pdf)
+    return pdf
 
 @login_required(login_url="/login/")
 def pages(request):
