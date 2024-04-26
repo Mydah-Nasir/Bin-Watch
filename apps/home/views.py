@@ -151,7 +151,7 @@ def sidebar(request):
     # user_list = list(user_cursor)
     # user = user_list[0]
     # is_admin = user['is_admin']
-    return { 'is_admin' : True }
+    return { 'is_admin' : 'True' }
 
 def adduser(request):
     msg = None
