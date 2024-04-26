@@ -26,6 +26,9 @@ from ultralytics import YOLO
 from pymongo import MongoClient
 from datetime import datetime
 from .utils import CustomJSONEncoder
+from django.template.loader import render_to_string
+from django.conf import settings
+from xhtml2pdf import pisa
 from pymongo.server_api import ServerApi
 import certifi
 
@@ -310,8 +313,23 @@ def edituser(request,username):
         form = EditUserForm(initial=user)
 
     return render(request, "home/edituser.html", {"segment":'user',"username":username,"form": form, "msg": msg, "success": success})
+def generate_pdf(request):
+    context = {
+        'firstname': 'John',
+        'lastname': 'Doe',
+        'department': 'Engineering',
+        'created_at': '2024-04-23 12:34:56',
+        'camera_name': 'Camera 1',
+        'img_url': 'example.jpg',
+    }
+    
+    html = render_to_string('home/reportpdf.html', context)
+    pdf = HttpResponse(content_type='application/pdf')
+    pisa.CreatePDF(html, dest=pdf)
+    return pdf
 
 def verifyreport(request,report_id):
+    collection_name = dbname["ActivityLog"]
     msg = None
     success = False
     object_id = ObjectId(report_id)
@@ -321,6 +339,14 @@ def verifyreport(request,report_id):
     firstname = report['firstname']
     lastname = report['lastname']
     department = report['department']
+    post_id_str = report['post_id']
+    post_id = ObjectId(post_id_str)
+    post_cursor = collection_name.find({"_id": post_id})
+    post_list = list(post_cursor)
+    post = post_list[0]
+    img_url = post['created_at'].strftime("%Y-%m-%d_%H-%M-%S") + '.jpg'
+    camera_name = post['camera_name']
+    created_at = post['created_at']
     if request.method == "POST":
         form = VerifyReportForm(request.POST)
         if form.is_valid():
@@ -348,7 +374,7 @@ def verifyreport(request,report_id):
     else:
         form = VerifyReportForm(initial=report)
 
-    return render(request, "home/verifyreport.html", {"segment":'report',"firstname":firstname,'lastname':lastname,"department":department,"form": form, "msg": msg, "success": success})
+    return render(request, "home/verifyreport.html", {"segment":'report',"firstname":firstname,'lastname':lastname,'img_url':img_url,"department":department,'created_at':created_at,'camera_name':camera_name,"form": form, "msg": msg, "success": success})
 
 @login_required(login_url="/login/")
 def pages(request):
@@ -390,7 +416,7 @@ video_url = 'http://192.168.100.203:8080/video'
 
 # Construct the path to best.pt dynamically
 weights_path = os.path.join(BASE_DIR, 'static', 'assets', 'weights', 'best.pt')
-video_path = os.path.join(BASE_DIR, 'static', 'assets', 'img', 'resulta.mp4')
+#video_path = os.path.join(BASE_DIR, 'static', 'assets', 'img', 'resulta.mp4')
 
 model = YOLO(weights_path)  #actual path to YOLO model
 
@@ -615,13 +641,15 @@ def reportuser(request,post_id):
             firstname = form.cleaned_data.get("firstname")
             lastname = form.cleaned_data.get("lastname")
             department = form.cleaned_data.get("department")
+            username = form.cleaned_data.get("username")
             
             report = {
                 'firstname':firstname,
                 'lastname':lastname,
                 'department':department,
                 'is_valid':'False',
-                'post_id':post_id
+                'post_id':post_id,
+                'username': username,
             }
             report_collection.insert_many([report])
 

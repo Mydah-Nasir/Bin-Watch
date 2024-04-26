@@ -203,6 +203,13 @@ class ReportUserForm(forms.Form):
                 "class": "form-control"
             }
         ))
+    username = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Username",
+                "class": "form-control"
+            }
+        ))
 
 class VerifyReportForm(forms.Form):
     is_valid_choices = (
