@@ -39,7 +39,7 @@
                 </li> -->
                 {% if is_admin == "True" %}
                 <li class="{% if 'livefeed' in segment %} active {% endif %}">
-                    <a href="/livefeed.html">
+                    <a href="{% url 'livefeed' %}">
                         <i class="tim-icons icon-video-66"></i>
                         <p>Live Feed</p>
                     </a>

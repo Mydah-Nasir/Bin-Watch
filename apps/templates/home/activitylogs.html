@@ -33,9 +33,9 @@
                     <th class="text-center">
                       Date
                     </th>
-                    <th class="text-center">
+                    <!-- <th class="text-center">
                       View Video
-                    </th>
+                    </th> -->
                     <th class="text-center">
                       Delete Log
                     </th>
@@ -59,9 +59,9 @@
                     <td class="text-center">
                       {{ log.created_at|date:"Y-m-d" }}
                     </td>
-                    <td class="text-center">
+                    <!-- <td class="text-center">
                       <i class="fas fa-eye video-icon" data-video-url="https://www.example.com/your-video-url.mp4"></i>
-                    </td>
+                    </td> -->
                     <td class="text-center">
                       <a href="#" class="delete-icon" onclick="openConfirmationModal('{{ log.log_id }}')">
                         <i class="fas fa-trash"></i>

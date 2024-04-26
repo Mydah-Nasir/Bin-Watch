@@ -8,8 +8,19 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, SignUpForm
 from pymongo import MongoClient
+from pymongo.server_api import ServerApi
+import ssl
+import certifi
 
-client = MongoClient('localhost', 27017)
+# Create SSL context with certificate verification disabled
+ssl_context = ssl.create_default_context()
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
+
+
+uri = "mongodb+srv://alina11nasir:lK9ZrZOvxnYGIreb@binwatch.xyrfu00.mongodb.net/?retryWrites=true&w=majority&appName=BinWatch"
+# Create a new client and connect to the server
+client = MongoClient(uri, tlsCAFile=certifi.where()) 
 dbname = client['BinWatch']
 collection_name = dbname["User"]
 

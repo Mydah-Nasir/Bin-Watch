@@ -26,8 +26,12 @@ from ultralytics import YOLO
 from pymongo import MongoClient
 from datetime import datetime
 from .utils import CustomJSONEncoder
+from pymongo.server_api import ServerApi
+import certifi
 
-client = MongoClient('localhost', 27017)
+uri = "mongodb+srv://alina11nasir:lK9ZrZOvxnYGIreb@binwatch.xyrfu00.mongodb.net/?retryWrites=true&w=majority&appName=BinWatch"
+# Create a new client and connect to the server
+client = MongoClient(uri, tlsCAFile=certifi.where())
 rtsp_url = 'rtsp://admin:nust123456@192.168.0.118:554/Streaming/Channels/101'
 webcam_url = 0
 
@@ -40,7 +44,7 @@ frame_buffer = []
 
 dbname = client['BinWatch']
 collection_name = dbname["ActivityLog"]
-distance_collection = dbname["Distance"]
+#distance_collection = dbname["Distance"]
 user_collection = dbname["User"]
 report_collection = dbname["Report"]
 #let's create two documents
@@ -89,12 +93,21 @@ def index(request):
 
 def viewusers(request):
     user_collection = dbname["User"]
+    username = str(request.user)
+    user_cursor = user_collection.find({"username": username})
+    user_list = list(user_cursor)
+    user = user_list[0]
+    is_admin = user['is_admin']
     users_cursor = user_collection.find({})
     users = list(users_cursor)
     for user in users:
         user['user_id'] = str(user['_id'])
     context = {'segment': 'viewusers','users':users}
-    return render(request, 'home/viewusers.html',context)
+    if(is_admin == "True"):
+        return render(request, 'home/viewusers.html',context)
+    else:
+        return render(request, 'home/page-403.html',context)
+
 
 def viewreports(request):
     report_collection = dbname["Report"]
@@ -106,6 +119,11 @@ def viewreports(request):
     return render(request, 'home/viewreports.html',context)
 
 def activitylogs(request):
+    username = str(request.user)
+    user_cursor = user_collection.find({"username": username})
+    user_list = list(user_cursor)
+    user = user_list[0]
+    is_admin = user['is_admin']
     collection_name = dbname["ActivityLog"]
     logs_cursor_all = collection_name.find({}).sort('created_at', -1)
     logs = list(logs_cursor_all)
@@ -114,7 +132,10 @@ def activitylogs(request):
     context = {}
     context['logs']=logs
     context['segment']='activitylogs'
-    return render(request, 'home/activitylogs.html',context)
+    if(is_admin)=="True":
+         return render(request, 'home/activitylogs.html',context)
+    else:
+        return render(request, 'home/page-403.html',context)
 
 def trashposts(request):
     collection_name = dbname["ActivityLog"]
@@ -146,9 +167,12 @@ def sidebar(request):
     username = str(request.user)
     user_cursor = user_collection.find({"username": username})
     user_list = list(user_cursor)
-    user = user_list[0]
-    is_admin = user['is_admin']
-    return { 'is_admin' : is_admin }
+    if len(user_list)>0:
+        user = user_list[0]
+        is_admin = user['is_admin']
+        return { 'is_admin' : is_admin }
+    else:
+        return {'is_admin' : 'False'}
 
 def adduser(request):
     msg = None
@@ -568,10 +592,18 @@ def video_path(request):
     return StreamingHttpResponse(generate(), content_type='multipart/x-mixed-replace; boundary=frame')
 
 def livefeed(request):
+    username = str(request.user)
+    user_cursor = user_collection.find({"username": username})
+    user_list = list(user_cursor)
+    user = user_list[0]
+    is_admin = user['is_admin']
     context = {}
     context['logs']=logs
     context['segment']='livefeed'
-    return render(request, 'livefeed.html',context)
+    if(is_admin == 'True'):
+        return render(request, 'home/livefeed.html',context)
+    else:
+        return render(request, 'home/page-403.html',context)
 
 def reportuser(request,post_id):
     msg = None
