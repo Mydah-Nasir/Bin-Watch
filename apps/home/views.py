@@ -78,21 +78,20 @@ def index(request):
     user = user_list[0]
     is_admin = user['is_admin']
     collection_name = dbname["ActivityLog"]
-    trashposts_cursor_all = collection_name.find({}).sort('created_at', -1)
-    trashposts = list(trashposts_cursor_all)
     logs_cursor = collection_name.find({})
     logs_index = list(logs_cursor)
     logs_cursor_all = collection_name.find({}).sort('created_at', -1)
     logs = list(logs_cursor_all)
-    for trashpost in trashposts:
-        trashpost['trashpost_id'] = str(trashpost['_id'])
-        trashpost['img_url'] = trashpost['created_at'].strftime("%Y-%m-%d_%H-%M-%S") + '.jpg'
-
-    context = {'segment': 'index','trashposts':trashposts ,'logs':logs[:8] ,'logs_index': json.dumps(logs_index, cls=CustomJSONEncoder)}
+    report_collection = dbname["Report"]
+    reports_cursor = report_collection.find({"username": username})
+    reports = list(reports_cursor)
+    for report in reports:
+        report['report_id'] = str(report['_id'])
+    context = {'segment': 'index','is_admin':is_admin,'reports':reports ,'logs':logs[:8] ,'logs_index': json.dumps(logs_index, cls=CustomJSONEncoder)}
     if(is_admin == "True"):
         return render(request, 'home/index.html',context)
     else:
-        return render(request, 'home/trashposts.html',context)
+        return render(request, 'home/viewreports.html',context)
 
 def viewusers(request):
     user_collection = dbname["User"]
@@ -113,12 +112,21 @@ def viewusers(request):
 
 
 def viewreports(request):
+    user_collection = dbname["User"]
     report_collection = dbname["Report"]
-    reports_cursor = report_collection.find({})
+    username = str(request.user)
+    user_cursor = user_collection.find({"username": username})
+    user_list = list(user_cursor)
+    user = user_list[0]
+    is_admin = user['is_admin']
+    if(is_admin == "True"):
+        reports_cursor = report_collection.find({})
+    else:
+        reports_cursor = report_collection.find({"username": username})
     reports = list(reports_cursor)
     for report in reports:
         report['report_id'] = str(report['_id'])
-    context = {'segment': 'viewreports','reports':reports}
+    context = {'segment': 'viewreports','reports':reports,'is_admin': is_admin}
     return render(request, 'home/viewreports.html',context)
 
 def activitylogs(request):
@@ -330,6 +338,7 @@ def generate_pdf(request):
 
 def verifyreport(request,report_id):
     collection_name = dbname["ActivityLog"]
+    user_collection = dbname["User"]
     object_id = ObjectId(report_id)
     report_cursor = report_collection.find({"_id": object_id})
     report_list = list(report_cursor)
@@ -343,6 +352,10 @@ def verifyreport(request,report_id):
     post_cursor = collection_name.find({"_id": post_id})
     post_list = list(post_cursor)
     post = post_list[0]
+    user_cursor = user_collection.find({"username": username})
+    user_list = list(user_cursor)
+    user = user_list[0]
+    user_email = user['email']
     img_url = post['created_at'].strftime("%Y-%m-%d_%H-%M-%S") + '.jpg'
     camera_name = post['camera_name']
     created_at = post['created_at']

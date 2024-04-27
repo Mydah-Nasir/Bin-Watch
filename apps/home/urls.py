@@ -25,7 +25,7 @@ urlpatterns = [
     path('deleteuser/<str:username>/',deleteuser , name='deleteuser'),
     path('deletereport/<str:report_id>/', deletereport, name='deletereport'),
     path('edituser/<str:username>/', edituser, name='edituser'),
-    path('verifyreport/<str:report_id>/', verifyreport, name='verifyreport'),
+    path('downloadreport/<str:report_id>/', verifyreport, name='downloadreport'),
     path('generate_pdf/', generate_pdf, name='generate_pdf'),
     # Matches any html file
     re_path(r'^.*\.*', views.pages, name='pages'),
