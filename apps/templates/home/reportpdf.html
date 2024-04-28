@@ -14,22 +14,33 @@
             max-width: 800px;
             margin: auto;
         }
-        h1, h2 {
+        h1{
             text-align: center;
         }
+        h2{
+            text-align: center;
+            margin-bottom: none;
+            padding-bottom: 0%;
+            padding-top: 0%;
+            font-size: 1.5em;
+            border-bottom: 1px solid  #5D6975;
+        }
+
         h3 {
             font-family: Arial, sans-serif;
             margin-bottom: none;
             padding-bottom: 0%;
             padding-top: 0%;
+            font-size: 1.2em;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            margin-top: 10px;
         }
         table td, table th {
-            padding: 8px;
+            padding: 5px;
             border: 1px solid #ddd;
             text-align: left;
         }
@@ -38,58 +49,101 @@
             margin: auto;
             max-width: 100%;
             height: auto;
-            margin-top: 20px;
-            margin-bottom: 20px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        h1 {
+            border-top: 1px solid  #5D6975;
+            border-bottom: 1px solid  #5D6975;
+            color: #5D6975;
+            font-size: 2.4em;
+            line-height: 1.4em;
+            font-weight: normal;
+            text-align: center;
+            margin: 0 0 15px 0;
+            background: url("apps/static/assets/img/dimension.png");
         }
         .left-div{
             float: left;
         }
-        .right-div{
-
+        #logo {
+            text-align: center;
+            margin-bottom: 5px;
         }
+        #logo img {
+            width: 90px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            font-size: 1.2em;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        #company{
+            width: 50%;
+            float: left;
+        }
+        #project{
+            width: 50%;
+            float:right;
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Bin Watch Report</h1>
-        <div class="left-div">
-            <h3>Company Name</h3>
-            <h3>455 Foggy Heights,<br /> AZ 85004, US</h3>
-            <h3>(+92) 341-2420099</h3>
-            <h3>binwatcsupport@gmail.com</a></h3>
+        <div id="logo">
+            <img src="apps/static/assets/img/pdflogo.jpg">
           </div>
+        <h1>Littering Action Report</h1>
+        <div id="company">
+            <h3>BinWatch</h3>
+            <h3>NUAT H-12 Campus<br /> ISL 44100, PAK</h3>
+            <h3>(92) 341-2420099</h3>
+            <h3>binwatchsupport@gmail.com</h3>
+            <h2>Charges</h2>
+          </div>
+          <div id="project">
+            <h3><span>AMOUNT: </span>Rs 1000</h3>
+            <h3><span>DATE: </span> {{ created_at|date:"d-m-Y" }}</h3>
+            <h3><span>DUE DATE: </span>{{due_date}}</h3>
+        </div>     
         <table>
             <tr>
                 <th>First Name</th>
-                <td>{{firstname}}</td>
-            </tr>
-            <tr>
                 <th>Last Name</th>
-                <td>{{lastname}}</td>
-            </tr>
-            <tr>
                 <th>Username</th>
-                <td>{{username}}</td>
-            </tr>
-            <tr>
                 <th>Date</th>
-                <td>{{ created_at|date:'Y-m-d' }}</td>
-            </tr>
-            <tr>
                 <th>Time</th>
-                <td>{{created_at|time:'H:i:s'}}</td>
+                <th>Camera Name</th>
             </tr>
             <tr>
-                <th>Camera Name</th>
+                <td>{{firstname}}</td>
+                <td>{{lastname}}</td>
+                <td>{{username}}</td>
+                <td>{{ created_at|date:'Y-m-d' }}</td>
+                <td>{{created_at|time:'H:i:s'}}</td>
                 <td>{{camera_name}}</td>
-            </tr>
         </table>
         <div class="card-body">
             <img
             src="apps/static/assets/littering_images/{{img_url}}"
             alt="Image Alt Text"
           />
-          </div>
+        </div>
+
     </div>
 </body>
 </html>

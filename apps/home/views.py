@@ -24,7 +24,7 @@ import supervision as sv
 import numpy as np
 from ultralytics import YOLO
 from pymongo import MongoClient
-from datetime import datetime
+from datetime import datetime, timedelta
 from .utils import CustomJSONEncoder
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -359,12 +359,17 @@ def verifyreport(request,report_id):
     img_url = post['created_at'].strftime("%Y-%m-%d_%H-%M-%S") + '.jpg'
     camera_name = post['camera_name']
     created_at = post['created_at']
+    # Add 1 month to the original due date
+    next_month_due_date = created_at + timedelta(days=30)
+    # Format the resulting due date as a string
+    next_month_due_date_str = next_month_due_date.strftime("%d-%m-%Y")
     context = {
         'username': username,
         'firstname': firstname,
         'lastname': lastname,
         'department': department,
         'created_at': created_at,
+        'due_date':  next_month_due_date_str,
         'camera_name': camera_name,
         'img_url': img_url,
     }
@@ -410,7 +415,7 @@ def pages(request):
 
 # Get the base directory of your Django project
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-video_url = 'http://192.168.100.203:8080/video'
+video_url = 'http://192.168.100.24:8080/video'
 
 # Construct the path to best.pt dynamically
 weights_path = os.path.join(BASE_DIR, 'static', 'assets', 'weights', 'best.pt')
